@@ -99,6 +99,6 @@ Sick-greens/
 
 ---
 
-## 🙋 Author
+## Author
 
 **sharr-catalyst** — [GitHub](https://github.com/sharr-catalyst)
