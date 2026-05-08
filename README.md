@@ -6,7 +6,7 @@ A deep learning system for **plant disease detection and progression tracking** 
 
 ---
 
-## 🧠 What It Does
+## What It Does
 
 - **Disease Classification** — identifies plant disease across 38 classes (e.g. Apple Scab, Tomato Late Blight, Potato Early Blight)
 - **Stage Classification** — maps each disease to one of 4 progression stages:
@@ -20,7 +20,7 @@ A deep learning system for **plant disease detection and progression tracking** 
 
 ---
 
-## 📊 Dataset
+## Dataset
 
 **PlantVillage** via TensorFlow Datasets (`tfds.load('plant_village')`)
 
@@ -30,7 +30,7 @@ A deep learning system for **plant disease detection and progression tracking** 
 
 ---
 
-## 🏗️ Model Architecture
+##  Model Architecture
 
 - **Backbone**: MobileNetV2 (pretrained on ImageNet, fine-tuned)
 - **Heads**:
@@ -41,7 +41,7 @@ A deep learning system for **plant disease detection and progression tracking** 
 
 ---
 
-## 📈 Evaluation Metrics
+## Evaluation Metrics
 
 | Task | Metric |
 |------|--------|
@@ -51,7 +51,7 @@ A deep learning system for **plant disease detection and progression tracking** 
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - Python, TensorFlow / Keras
 - TensorFlow Datasets
@@ -60,11 +60,10 @@ A deep learning system for **plant disease detection and progression tracking** 
 - Matplotlib, Seaborn, Plotly
 - scikit-learn
 - OpenCV, Pillow
-- Streamlit (deployment)
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 1. Clone the repo:
    ```bash
