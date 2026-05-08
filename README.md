@@ -1,4 +1,4 @@
-# 🌿 Your Greens Are Sick
+# Sick-greens
 
 A deep learning system for **plant disease detection and progression tracking** built on the PlantVillage dataset. Given a leaf image, the model identifies the disease, classifies its stage (healthy → early → mid → late), estimates days since infection, and computes a treatment urgency score.
 
