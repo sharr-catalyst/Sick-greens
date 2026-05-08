@@ -98,7 +98,8 @@ Sick-greens/
 ```
 
 ---
+## 📄 Project Report
+[View Report](https://github.com/sharr-catalyst/Sick-greens/blob/main/Plant%20project%20report%20.pdf)
 
 ## Author
-
 **sharr-catalyst** — [GitHub](https://github.com/sharr-catalyst)
