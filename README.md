@@ -10,7 +10,7 @@ A deep learning system for **plant disease detection and progression tracking** 
 [![Dataset](https://img.shields.io/badge/Dataset-PlantVillage-4CAF50?logo=leaf&logoColor=white)](https://www.tensorflow.org/datasets/catalog/plant_village)
 [![Classes](https://img.shields.io/badge/Classes-38-orange)](https://github.com/sharr-catalyst/Sick-greens)
 [![Stages](https://img.shields.io/badge/Stages-4-yellowgreen)](https://github.com/sharr-catalyst/Sick-greens)
-[![License](https://img.shields.io/badge/License-MIT-lightgrey)](LICENSE)
+[![License](https://img.shields.io/badge/License-Apache%202.0-lightgrey)](LICENSE)
 [![CI](https://github.com/sharr-catalyst/Sick-greens/actions/workflows/blank.yml/badge.svg?branch=main)](https://github.com/sharr-catalyst/Sick-greens/actions/workflows/blank.yml)
 ---
 
