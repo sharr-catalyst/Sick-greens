@@ -1,8 +1,16 @@
-# Sick-greens
+# 🌿 Sick-greens
 
 A deep learning system for **plant disease detection and progression tracking** built on the PlantVillage dataset. Given a leaf image, the model identifies the disease, classifies its stage (healthy → early → mid → late), estimates days since infection, and computes a treatment urgency score.
 
 [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/sharr-catalyst/Sick-greens/blob/main/YourGreensAreSick_v2.ipynb)
+[![Python](https://img.shields.io/badge/Python-3.8%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![TensorFlow](https://img.shields.io/badge/TensorFlow-2.12%2B-FF6F00?logo=tensorflow&logoColor=white)](https://www.tensorflow.org/)
+[![Keras](https://img.shields.io/badge/Keras-2.12%2B-D00000?logo=keras&logoColor=white)](https://keras.io/)
+[![MobileNetV2](https://img.shields.io/badge/Backbone-MobileNetV2-blue)](https://arxiv.org/abs/1801.04381)
+[![Dataset](https://img.shields.io/badge/Dataset-PlantVillage-4CAF50?logo=leaf&logoColor=white)](https://www.tensorflow.org/datasets/catalog/plant_village)
+[![Classes](https://img.shields.io/badge/Classes-38-orange)](https://github.com/sharr-catalyst/Sick-greens)
+[![Stages](https://img.shields.io/badge/Stages-4-yellowgreen)](https://github.com/sharr-catalyst/Sick-greens)
+[![License](https://img.shields.io/badge/License-MIT-lightgrey)](LICENSE)
 
 ---
 
@@ -23,14 +31,13 @@ A deep learning system for **plant disease detection and progression tracking** 
 ## Dataset
 
 **PlantVillage** via TensorFlow Datasets (`tfds.load('plant_village')`)
-
 - 38 disease/healthy classes across crops including Tomato, Potato, Apple, Grape, Corn, Peach, Pepper, Strawberry, and more
 - Capped at ~100–102 images per class for balanced training
 - Split: **70% train / 15% validation / 15% test**
 
 ---
 
-##  Model Architecture
+## Model Architecture
 
 - **Backbone**: MobileNetV2 (pretrained on ImageNet, fine-tuned)
 - **Heads**:
@@ -63,17 +70,52 @@ A deep learning system for **plant disease detection and progression tracking** 
 
 ---
 
+## Requirements
+
+Install all dependencies via:
+
+```bash
+pip install -r requirements.txt
+```
+
+> **Note:** If running on **Google Colab**, the notebook auto-installs all dependencies in its first cell — no manual setup needed.
+
+Key requirements at a glance:
+
+| Package | Version |
+|---------|---------|
+| tensorflow | ≥ 2.12.0 |
+| tensorflow-datasets | ≥ 4.9.0 |
+| keras | ≥ 2.12.0 |
+| scikit-learn | ≥ 1.2.0 |
+| opencv-python-headless | ≥ 4.7.0 |
+| Pillow | ≥ 9.4.0 |
+| numpy | ≥ 1.23.0 |
+| pandas | ≥ 1.5.0 |
+| matplotlib | ≥ 3.6.0 |
+| seaborn | ≥ 0.12.0 |
+| plotly | ≥ 5.14.0 |
+
+See [`requirements.txt`](requirements.txt) for the full pinned list.
+
+---
+
 ## Getting Started
 
 1. Clone the repo:
    ```bash
    git clone https://github.com/sharr-catalyst/Sick-greens.git
+   cd Sick-greens
    ```
 
-2. Open `YourGreensAreSick_v2.ipynb` in Google Colab
+2. *(Optional — local run only)* Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-3. Run all cells: **Runtime → Run all**
+3. Open `YourGreensAreSick_v2.ipynb` in Google Colab
 
+4. Run all cells: **Runtime → Run all**
    > The notebook will auto-install all dependencies in the first cell.
 
 ---
@@ -84,6 +126,7 @@ A deep learning system for **plant disease detection and progression tracking** 
 Sick-greens/
 │
 ├── YourGreensAreSick_v2.ipynb      # Main notebook
+├── requirements.txt                # Python dependencies
 ├── models/
 │   ├── final_progression_model.h5  # Saved model
 │   └── metadata.json               # Class names, mappings, metrics
@@ -97,8 +140,13 @@ Sick-greens/
 ```
 
 ---
+
 ## Project Report
+
 [View Report](https://github.com/sharr-catalyst/Sick-greens/blob/main/Plant%20project%20report%20.pdf)
 
+---
+
 ## Author
+
 **sharr-catalyst** — [GitHub](https://github.com/sharr-catalyst)
