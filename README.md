@@ -121,7 +121,7 @@ See [`requirements.txt`](requirements.txt) for the full pinned list.
 ---
 
 ## 📂 Project Structure
-
+```
 Sick-greens/
 │
 ├── YourGreensAreSick_v2.ipynb          # Main notebook
@@ -136,6 +136,9 @@ Sick-greens/
 │   ├── sample_predictions.png
 │   └── progression_curve.png
 └── README.md
+```
+ 
+
 ---
 
 ## Project Report
