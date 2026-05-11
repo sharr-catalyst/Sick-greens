@@ -122,14 +122,20 @@ See [`requirements.txt`](requirements.txt) for the full pinned list.
 
 ## 📂 Project Structure
 
-```
 Sick-greens/
 │
-├── YourGreensAreSick_v2.ipynb      # Main notebook
-├── requirements.txt                # Python dependencies
+├── YourGreensAreSick_v2.ipynb          # Main notebook
+├── requirements.txt                    # Python dependencies
+├── models/
+│   └── metadata.json                   # Class names, mappings, metrics
+├── outputs/
+│   ├── limited_class_distribution.png
+│   ├── sample_images.png
+│   ├── training_history.png
+│   ├── confusion_matrices.png
+│   ├── sample_predictions.png
+│   └── progression_curve.png
 └── README.md
-```
- 
 ---
 
 ## Project Report
