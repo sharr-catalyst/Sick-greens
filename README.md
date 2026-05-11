@@ -127,18 +127,9 @@ Sick-greens/
 │
 ├── YourGreensAreSick_v2.ipynb      # Main notebook
 ├── requirements.txt                # Python dependencies
-├── models/
-│   ├── final_progression_model.h5  # Saved model
-│   └── metadata.json               # Class names, mappings, metrics
-├── outputs/
-│   ├── limited_class_distribution.png
-│   ├── sample_images.png
-│   ├── confusion_matrices.png
-│   ├── sample_predictions.png
-│   └── progression_curve.png
 └── README.md
 ```
-
+ 
 ---
 
 ## Project Report
