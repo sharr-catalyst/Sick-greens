@@ -3,7 +3,7 @@
 A deep learning system for **plant disease detection and progression tracking** built on the PlantVillage dataset. Given a leaf image, the model identifies the disease, classifies its stage (healthy → early → mid → late), estimates days since infection, and computes a treatment urgency score.
 
 [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/sharr-catalyst/Sick-greens/blob/main/YourGreensAreSick_v2.ipynb)
-[![CI](https://github.com/sharr-catalyst/Sick-greens/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/sharr-catalyst/Sick-greens/actions/workflows/ci.yml)
+[![CI](https://github.com/sharr-catalyst/Sick-greens/actions/workflows/blank.yml/badge.svg?branch=main)](https://github.com/sharr-catalyst/Sick-greens/actions/workflows/blank.yml)
 [![Python](https://img.shields.io/badge/Python-3.8%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![TensorFlow](https://img.shields.io/badge/TensorFlow-2.12%2B-FF6F00?logo=tensorflow&logoColor=white)](https://www.tensorflow.org/)
 [![Keras](https://img.shields.io/badge/Keras-2.12%2B-D00000?logo=keras&logoColor=white)](https://keras.io/)
