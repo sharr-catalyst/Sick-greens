@@ -17,11 +17,32 @@ st.set_page_config(
 # ── CSS Styling ───────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
+    /* 1. Import the luxury serif font (Playfair Display) & clean UI font (Inter) */
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+
+    /* 2. Apply the Clean Body Font Globally first */
+    html, body, [data-testid="stAppViewContainer"], [data-testid="stSidebar"], .stApp, p, span, div, td {
+        font-family: 'Inter', sans-serif !important;
+    }
+
+    /* 3. Apply the Elegant Luxury Font from image_f229b6.jpg to all Titles and Headings */
+    h1, h2, h3, .top-bar h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {
+        font-family: 'Playfair Display', Georgia, serif !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.5px;
+    }
+
+    /* Main background background */
     .stApp { background-color: #f0f7f0; }
+
+    /* Sidebar background mapping */
     [data-testid="stSidebar"] {
         background: linear-gradient(180deg, #1B5E20 0%, #2E7D32 60%, #388E3C 100%);
     }
     [data-testid="stSidebar"] * { color: #fff !important; }
+    [data-testid="stSidebar"] .stSelectbox label { color: #C8E6C9 !important; }
+
+    /* Dashboard Cards */
     .card {
         background: white;
         border-radius: 12px;
@@ -31,14 +52,56 @@ st.markdown("""
         border-left: 5px solid #2E7D32;
     }
     .card-red   { border-left-color: #c62828; }
+    .card-blue  { border-left-color: #1565C0; }
     .card-amber { border-left-color: #E65100; }
-    .badge-healthy  { background:#E8F5E9; color:#1B5E20; border:1.5px solid #2E7D32; border-radius:8px; padding:6px 18px; font-weight:700; }
-    .badge-disease  { background:#FFEBEE; color:#B71C1C; border:1.5px solid #c62828; border-radius:8px; padding:6px 18px; font-weight:700; }
-    .stat-box { background: white; border-radius: 10px; padding: 1rem; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
-    .stat-num { font-size: 2rem; font-weight: 800; color: #2E7D32; }
-    .stat-lbl { font-size: 0.82rem; color: #666; }
-    [data-testid="stFileUploader"] { border: 2px dashed #4CAF50; border-radius: 12px; background: #F1F8E9; }
-    .top-bar { background: linear-gradient(135deg, #1B5E20, #2E7D32); color: white; padding: 1.2rem 2rem; border-radius: 12px; margin-bottom: 1.5rem; }
+
+    /* Result Badges */
+    .badge-healthy  { background:#E8F5E9; color:#1B5E20; border:1.5px solid #2E7D32; border-radius:8px; padding:6px 18px; font-weight:700; font-size:1.1rem; }
+    .badge-disease  { background:#FFEBEE; color:#B71C1C; border:1.5px solid #c62828; border-radius:8px; padding:6px 18px; font-weight:700; font-size:1.1rem; }
+
+    /* Top Stats Counters */
+    .stat-box {
+        background: white;
+        border-radius: 10px;
+        padding: 1rem;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    .stat-num { 
+        font-family: 'Playfair Display', serif !important; /* Makes metrics match style */
+        font-size: 2.2rem; 
+        font-weight: 700; 
+        color: #2E7D32; 
+    }
+    .stat-lbl { font-size: 0.82rem; color: #666; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* Upload Container box */
+    [data-testid="stFileUploader"] {
+        border: 2px dashed #4CAF50;
+        border-radius: 12px;
+        background: #F1F8E9;
+    }
+
+    /* Core Action Buttons */
+    .stButton>button {
+        background: linear-gradient(135deg, #2E7D32, #4CAF50);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 2rem;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.2s;
+    }
+    .stButton>button:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(46,125,50,0.4); }
+
+    .top-bar {
+        background: linear-gradient(135deg, #1B5E20, #2E7D32);
+        color: white;
+        padding: 1.2rem 2rem;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+    }
 </style>
 """, unsafe_allow_html=True)
 
