@@ -17,22 +17,25 @@ st.set_page_config(
 # ── CSS Styling ───────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-    /* 1. Import the luxury serif font (Playfair Display) & clean UI font (Inter) */
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+    /* 1. Import the smooth, rounded 'Outfit' font from Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
-    /* 2. Apply the Clean Body Font Globally first */
-    html, body, [data-testid="stAppViewContainer"], [data-testid="stSidebar"], .stApp, p, span, div, td {
-        font-family: 'Inter', sans-serif !important;
+    /* 2. FORCE IT UNIFORM ALL OVER THE APP FOR ALL TEXT (Overrides everything) */
+    * {
+        font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif !important;
     }
 
-    /* 3. Apply the Elegant Luxury Font from image_f229b6.jpg to all Titles and Headings */
+    html, body, [data-testid="stAppViewContainer"], [data-testid="stSidebar"], .stApp, p, span, div, td, th, button, input {
+        font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    }
+
+    /* 3. Smooth adjustments for Headings (No more pointy text!) */
     h1, h2, h3, .top-bar h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {
-        font-family: 'Playfair Display', Georgia, serif !important;
         font-weight: 700 !important;
-        letter-spacing: 0.5px;
+        letter-spacing: -0.3px !important;
     }
 
-    /* Main background background */
+    /* Main background */
     .stApp { background-color: #f0f7f0; }
 
     /* Sidebar background mapping */
@@ -68,12 +71,12 @@ st.markdown("""
         box-shadow: 0 2px 8px rgba(0,0,0,0.07);
     }
     .stat-num { 
-        font-family: 'Playfair Display', serif !important; /* Makes metrics match style */
         font-size: 2.2rem; 
-        font-weight: 700; 
+        font-weight: 800; 
         color: #2E7D32; 
+        letter-spacing: -0.5px;
     }
-    .stat-lbl { font-size: 0.82rem; color: #666; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-lbl { font-size: 0.82rem; color: #666; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500; }
 
     /* Upload Container box */
     [data-testid="stFileUploader"] {
@@ -104,7 +107,6 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
-
 # ── Class Labels & Info mappings ──────────────────────────────────────────────
 CLASS_LABELS = [
     "Apple — Scab", "Apple — Black Rot", "Apple — Cedar Apple Rust", "Apple — Healthy",
