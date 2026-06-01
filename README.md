@@ -13,7 +13,7 @@ A deep learning system for **plant disease detection and progression tracking** 
 [![Stages](https://img.shields.io/badge/Stages-4-yellowgreen)](https://github.com/sharr-catalyst/Sick-greens)
 [![License](https://img.shields.io/badge/License-Apache%202.0-lightgrey)](LICENSE)
 [![Hugging Face](https://img.shields.io/badge/🤗%20Model-Hugging%20Face-yellow)](https://huggingface.co/Sharmistha-catalyst/sick-greens-plant-disease)
-
+[![Streamlit App](https://img.shields.io/badge/Live%20Demo-Sick--greens-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://your-greensaresick.streamlit.app/)
 ---
 
 ## What It Does
