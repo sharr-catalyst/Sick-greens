@@ -78,17 +78,39 @@ st.markdown("""
     }
     .stat-lbl { font-size: 0.82rem; color: #666; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500; }
 
-    /* Upload Container box */
+    /* ── COMPLETE FILE UPLOADER VISUAL REPAIRS ── */
     [data-testid="stFileUploader"] {
-        border: 2px dashed #4CAF50;
-        border-radius: 12px;
-        background: #F1F8E9;
+        border: 2px dashed #4CAF50 !important;
+        border-radius: 14px !important;
+        background-color: #F1F8E9 !important;
+        padding: 16px !important;
+    }
+    /* Force inner structural text blocks to remain high-contrast dark botanical green */
+    [data-testid="stFileUploader"] label, 
+    [data-testid="stFileUploader"] p, 
+    [data-testid="stFileUploader"] span, 
+    [data-testid="stFileUploader"] small,
+    [data-testid="stFileUploader"] div {
+        color: #1B5E20 !important;
+    }
+    /* Style the internal interactive "Browse files" button safely */
+    [data-testid="stFileUploader"] button {
+        background-color: #2E7D32 !important;
+        color: #ffffff !important;
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 6px 16px !important;
+        font-weight: 600 !important;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
+    }
+    [data-testid="stFileUploader"] button:hover {
+        background-color: #1B5E20 !important;
     }
 
     /* Core Action Buttons */
     .stButton>button {
         background: linear-gradient(135deg, #2E7D32, #4CAF50);
-        color: white;
+        color: white !important;
         border: none;
         border-radius: 8px;
         padding: 0.5rem 2rem;
@@ -184,8 +206,8 @@ def predict(model, framework, image: Image.Image):
 # ── Persistent Session State Management ───────────────────────────────────────
 if "analysis_done" not in st.session_state:
     st.session_state.analysis_done = False
-if "current_file" not in st.session_state:
-    st.session_state.current_file = None
+if "current_file_name" not in st.session_state:
+    st.session_state.current_file_name = None
 
 # ── Interface Rendering ───────────────────────────────────────────────────────
 st.markdown("""
@@ -211,23 +233,25 @@ st.markdown("<br>", unsafe_allow_html=True)
 left, right = st.columns([1, 1.2], gap="large")
 
 with left:
-    st.markdown("<h3 style='color: #2E7D32; margin-top: 0;'>Scan Leaf</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color: #2E7D32; margin-top: 0;'>📸 Scan Leaf</h3>", unsafe_allow_html=True)
     
     uploaded = st.file_uploader("Upload leaf sample", type=["jpg", "png", "jpeg"], label_visibility="collapsed")
     
-    # Reset state if a brand new file gets dropped in
-    if uploaded != st.session_state.current_file:
-        st.session_state.current_file = uploaded
-        st.session_state.analysis_done = False
-    
     if uploaded:
+        if st.session_state.current_file_name != uploaded.name:
+            st.session_state.current_file_name = uploaded.name
+            st.session_state.analysis_done = False
+            
         img = Image.open(uploaded)
         st.image(img, use_container_width=True)
         if st.button("Analyze Diagnostics", use_container_width=True):
             st.session_state.analysis_done = True
+    else:
+        st.session_state.current_file_name = None
+        st.session_state.analysis_done = False
 
 with right:
-    st.markdown("<h3 style='color: #2E7D32; margin-top: 0;'>System Insights</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color: #2E7D32; margin-top: 0;'>🔬 System Insights</h3>", unsafe_allow_html=True)
     
     if not uploaded:
         st.info("Awaiting input sample. Drop a leaf crop profile into the scanner area to run live neural inference.")
@@ -239,35 +263,4 @@ with right:
             
         top5_idx, top5_prob, all_probs = predict(model, framework, img)
         top_label = CLASS_LABELS[top5_idx[0]]
-        top_conf = top5_prob[0]
-        is_healthy = any(k in top_label for k in HEALTHY_KEYWORDS)
-        
-        badge = "badge-healthy" if is_healthy else "badge-disease"
-        card_theme = "" if is_healthy else "card-red"
-        
-        st.markdown(f"""
-        <div class="card {card_theme}">
-            <p style="font-size:0.85rem;color:#888;margin:0;">DIAGNOSIS MATRIX</p>
-            <p style="font-size:1.4rem;font-weight:800;margin:6px 0;">{top_label}</p>
-            <span class="{badge}">{top_conf:.1%} Match Confidence</span>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        if not is_healthy:
-            matched = next((k for k in DISEASE_INFO if k.lower() in top_label.lower()), None)
-            if matched:
-                info = DISEASE_INFO[matched]
-                st.markdown(f"""
-                <div class="card card-amber">
-                    <strong>📋 Clinical Protocol:</strong><br>
-                    • <b>Pathogen Class:</b> {info['cause']}<br>
-                    • <b>Threat Profile:</b> {info['severity']}<br>
-                    • <b>Remediation Strategy:</b> {info['treatment']}
-                </div>
-                """, unsafe_allow_html=True)
-
-        # Bar Charts Breakdown
-        st.markdown("**⚡ Class Confidence Distribution**")
-        import pandas as pd
-        df = pd.DataFrame({"Classification": [CLASS_LABELS[i] for i in top5_idx], "Confidence": top5_prob})
-        st.bar_chart(df.set_index("Classification"))
+        top_conf
