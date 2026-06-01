@@ -107,6 +107,7 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
+
 # ── Class Labels & Info mappings ──────────────────────────────────────────────
 CLASS_LABELS = [
     "Apple — Scab", "Apple — Black Rot", "Apple — Cedar Apple Rust", "Apple — Healthy",
@@ -180,6 +181,12 @@ def predict(model, framework, image: Image.Image):
     top5_idx = np.argsort(probs)[::-1][:5]
     return top5_idx, probs[top5_idx], probs
 
+# ── Persistent Session State Management ───────────────────────────────────────
+if "analysis_done" not in st.session_state:
+    st.session_state.analysis_done = False
+if "current_file" not in st.session_state:
+    st.session_state.current_file = None
+
 # ── Interface Rendering ───────────────────────────────────────────────────────
 st.markdown("""
 <div class="top-bar">
@@ -204,24 +211,28 @@ st.markdown("<br>", unsafe_allow_html=True)
 left, right = st.columns([1, 1.2], gap="large")
 
 with left:
-    # 🎨 Styled Scan Leaf Header with the dark green font color
     st.markdown("<h3 style='color: #2E7D32; margin-top: 0;'>Scan Leaf</h3>", unsafe_allow_html=True)
     
-    # 📦 This line is now perfectly aligned with exactly 4 spaces of indentation
     uploaded = st.file_uploader("Upload leaf sample", type=["jpg", "png", "jpeg"], label_visibility="collapsed")
+    
+    # Reset state if a brand new file gets dropped in
+    if uploaded != st.session_state.current_file:
+        st.session_state.current_file = uploaded
+        st.session_state.analysis_done = False
     
     if uploaded:
         img = Image.open(uploaded)
         st.image(img, use_container_width=True)
-        analyze_btn = st.button("Analyze Diagnostics", use_container_width=True)
-    else:
-        analyze_btn = False
+        if st.button("Analyze Diagnostics", use_container_width=True):
+            st.session_state.analysis_done = True
 
 with right:
     st.markdown("<h3 style='color: #2E7D32; margin-top: 0;'>System Insights</h3>", unsafe_allow_html=True)
+    
     if not uploaded:
         st.info("Awaiting input sample. Drop a leaf crop profile into the scanner area to run live neural inference.")
-    elif analyze_btn:
+    
+    elif st.session_state.analysis_done:
         model, framework = load_model()
         if framework == "demo":
             st.warning("Running in simulated mode. Verify that your model name matches your Hugging Face storage precisely.")
