@@ -149,7 +149,7 @@ with left:
         analyze_btn = False
 
 with right:
-    st.markdown("### 🔬 System Insights")
+    st.markdown("<h3 style='color: #2E7D32; margin-top: 0;'>🔬 System Insights</h3>", unsafe_allow_html=True)
     if not uploaded:
         st.info("Awaiting input sample. Drop a leaf crop profile into the scanner area to run live neural inference.")
     elif analyze_btn:
