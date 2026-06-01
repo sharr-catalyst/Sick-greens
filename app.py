@@ -139,7 +139,7 @@ st.markdown("<br>", unsafe_allow_html=True)
 left, right = st.columns([1, 1.2], gap="large")
 
 with left:
-    st.markdown("### 📸 Scan Leaf")
+     st.markdown("<h3 style='color: #2E7D32; margin-top: 0;'>Upload photos </h3>", unsafe_allow_html=True)
     uploaded = st.file_uploader("Upload leaf sample", type=["jpg", "png", "jpeg"], label_visibility="collapsed")
     if uploaded:
         img = Image.open(uploaded)
@@ -149,7 +149,7 @@ with left:
         analyze_btn = False
 
 with right:
-    st.markdown("<h3 style='color: #2E7D32; margin-top: 0;'>🔬 System Insights</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color: #2E7D32; margin-top: 0;'>System Insights</h3>", unsafe_allow_html=True)
     if not uploaded:
         st.info("Awaiting input sample. Drop a leaf crop profile into the scanner area to run live neural inference.")
     elif analyze_btn:
