@@ -17,10 +17,8 @@ st.set_page_config(
 # ── CSS Styling ───────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-    /* 1. Import the smooth, rounded 'Outfit' font from Google Fonts */
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
-    /* 2. FORCE IT UNIFORM ALL OVER THE APP FOR ALL TEXT (Overrides everything) */
     * {
         font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif !important;
     }
@@ -29,10 +27,10 @@ st.markdown("""
         font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif !important;
     }
 
-    /* 3. Smooth adjustments for Headings (No more pointy text!) */
-    h1, h2, h3, .top-bar h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {
+    h1, h2, h3 {
         font-weight: 700 !important;
         letter-spacing: -0.3px !important;
+        color: #1B5E20;
     }
 
     /* Main background */
@@ -85,7 +83,6 @@ st.markdown("""
         background-color: #F1F8E9 !important;
         padding: 16px !important;
     }
-    /* Force inner structural text blocks to remain high-contrast dark botanical green */
     [data-testid="stFileUploader"] label, 
     [data-testid="stFileUploader"] p, 
     [data-testid="stFileUploader"] span, 
@@ -93,7 +90,6 @@ st.markdown("""
     [data-testid="stFileUploader"] div {
         color: #1B5E20 !important;
     }
-    /* Style the internal interactive "Browse files" button safely */
     [data-testid="stFileUploader"] button {
         background-color: #2E7D32 !important;
         color: #ffffff !important;
@@ -157,23 +153,27 @@ DISEASE_INFO = {
 MODEL_DIR = "models"
 MODEL_FILENAME = "final_progression_model.h5" 
 MODEL_PATH = os.path.join(MODEL_DIR, MODEL_FILENAME)
+METADATA_FILENAME = "metadata.json"
+METADATA_PATH = os.path.join(MODEL_DIR, METADATA_FILENAME)
+
 MODEL_URL = f"https://huggingface.co/Sharmistha-catalyst/sick-greens-plant-disease/resolve/main/{MODEL_FILENAME}"
+METADATA_URL = f"https://huggingface.co/Sharmistha-catalyst/sick-greens-plant-disease/resolve/main/{METADATA_FILENAME}"
 
-# ── Safe Metadata Reader ──────────────────────────────────────────────────────
-metadata = {}
-if os.path.exists("models/metadata.json"):
-    try:
-        with open("models/metadata.json", "r") as f:
-            metadata = json.load(f)
-    except Exception:
-        pass
-
-# ── Engine Core ───────────────────────────────────────────────────────────────
+# ── Safe Infrastructure Sync Engine ───────────────────────────────────────────
 @st.cache_resource
-def load_model():
-    """Seamlessly stream model weights down from your Hugging Face space."""
+def load_assets():
+    """Download weights and metadata files safely from Hugging Face."""
+    os.makedirs(MODEL_DIR, exist_ok=True)
+    
+    # Sync Metadata
+    if not os.path.exists(METADATA_PATH):
+        try:
+            urllib.request.urlretrieve(METADATA_URL, METADATA_PATH)
+        except Exception:
+            pass
+            
+    # Sync Weights
     if not os.path.exists(MODEL_PATH):
-        os.makedirs(MODEL_DIR, exist_ok=True)
         try:
             with st.spinner("📥 Downloading deep learning model weights from Hugging Face..."):
                 urllib.request.urlretrieve(MODEL_URL, MODEL_PATH)
@@ -189,6 +189,18 @@ def load_model():
         pass
     return None, "demo"
 
+# Load backend assets
+model, framework = load_assets()
+
+# Read Meta-Metrics
+metadata = {}
+if os.path.exists(METADATA_PATH):
+    try:
+        with open(METADATA_PATH, "r") as f:
+            metadata = json.load(f)
+    except Exception:
+        pass
+
 def predict(model, framework, image: Image.Image):
     img = image.convert("RGB").resize((224, 224))
     arr = np.array(img, dtype=np.float32) / 255.0
@@ -203,7 +215,7 @@ def predict(model, framework, image: Image.Image):
     top5_idx = np.argsort(probs)[::-1][:5]
     return top5_idx, probs[top5_idx], probs
 
-# ── Persistent Session State Management ───────────────────────────────────────
+# ── Session State Management ──────────────────────────────────────────────────
 if "analysis_done" not in st.session_state:
     st.session_state.analysis_done = False
 if "current_file_name" not in st.session_state:
@@ -222,7 +234,7 @@ c1, c2, c3, c4 = st.columns(4)
 metrics = [
     (metadata.get("total_samples", "61,486"), "Dataset Images"),
     (metadata.get("model_architecture", "MobileNetV2"), "Architecture"),
-    (f"{metadata.get('disease_acc', 0.94)*100:.1f}%" if "disease_acc" in metadata else "94.2%", "Model Accuracy"),
+    (f"{metadata.get('disease_acc', 0.942)*100:.1f}%" if "disease_acc" in metadata else "94.2%", "Model Accuracy"),
     ("Deployed", "Status")
 ]
 for col, (num, lbl) in zip([c1, c2, c3, c4], metrics):
@@ -235,7 +247,7 @@ left, right = st.columns([1, 1.2], gap="large")
 with left:
     st.markdown("<h3 style='color: #2E7D32; margin-top: 0;'>📸 Scan Leaf</h3>", unsafe_allow_html=True)
     
-    uploaded = st.file_uploader("Upload leaf sample", type=["jpg", "png", "jpeg"], label_visibility="collapsed")
+    uploaded = st.file_uploader("Upload leaf sample", type=["jpg", "png", "jpeg", "webp"], label_visibility="collapsed")
     
     if uploaded:
         if st.session_state.current_file_name != uploaded.name:
@@ -243,8 +255,9 @@ with left:
             st.session_state.analysis_done = False
             
         img = Image.open(uploaded)
-        st.image(img, use_container_width=True)
-        if st.button("Analyze Diagnostics", use_container_width=True):
+        st.image(img, width='stretch')
+        
+        if st.button("Analyze Diagnostics", width='stretch'):
             st.session_state.analysis_done = True
     else:
         st.session_state.current_file_name = None
@@ -257,10 +270,40 @@ with right:
         st.info("Awaiting input sample. Drop a leaf crop profile into the scanner area to run live neural inference.")
     
     elif st.session_state.analysis_done:
-        model, framework = load_model()
         if framework == "demo":
             st.warning("Running in simulated mode. Verify that your model name matches your Hugging Face storage precisely.")
             
         top5_idx, top5_prob, all_probs = predict(model, framework, img)
         top_label = CLASS_LABELS[top5_idx[0]]
-        top_conf
+        top_conf = top5_prob[0]
+        is_healthy = any(k in top_label for k in HEALTHY_KEYWORDS)
+        
+        badge = "badge-healthy" if is_healthy else "badge-disease"
+        card_theme = "" if is_healthy else "card-red"
+        
+        st.markdown(f"""
+        <div class="card {card_theme}">
+            <p style="font-size:0.85rem;color:#888;margin:0;">DIAGNOSIS MATRIX</p>
+            <p style="font-size:1.4rem;font-weight:800;margin:6px 0;">{top_label}</p>
+            <span class="{badge}">{top_conf:.1%} Match Confidence</span>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        if not is_healthy:
+            matched = next((k for k in DISEASE_INFO if k.lower() in top_label.lower()), None)
+            if matched:
+                info = DISEASE_INFO[matched]
+                st.markdown(f"""
+                <div class="card card-amber">
+                    <strong>📋 Clinical Protocol:</strong><br>
+                    • <b>Pathogen Class:</b> {info['cause']}<br>
+                    • <b>Threat Profile:</b> {info['severity']}<br>
+                    • <b>Remediation Strategy:</b> {info['treatment']}
+                </div>
+                """, unsafe_allow_html=True)
+
+        # Bar Charts Breakdown
+        st.markdown("**⚡ Class Confidence Distribution**")
+        import pandas as pd
+        df = pd.DataFrame({"Classification": [CLASS_LABELS[i] for i in top5_idx], "Confidence": top5_prob})
+        st.bar_chart(df.set_index("Classification"))
