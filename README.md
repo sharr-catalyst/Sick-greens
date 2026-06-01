@@ -127,18 +127,22 @@ See [`requirements.txt`](requirements.txt) for the full pinned list.
 ```
 Sick-greens/
 │
-├── YourGreensAreSick_v2.ipynb          # Main notebook
-├── requirements.txt                    # Python dependencies
-├── models/
-│   └── metadata.json                   # Class names, mappings, metrics
-├── outputs/
-│   ├── limited_class_distribution.png
-│   ├── sample_images.png
-│   ├── training_history.png
+├── models/                         
+│   ├── metadata.json                 # Contains training metrics, dataset sizes, and architecture data
+│      
+│
+├── outputs/                          # 📊 Training visualization assets
 │   ├── confusion_matrices.png
+│   ├── limited_class_distribution.png
+│   ├── progression_curve.png
+│   ├── sample_images.png
 │   ├── sample_predictions.png
-│   └── progression_curve.png
-└── README.md
+│   └── training_history.png
+│
+├── README.md                         
+├── app.py                           
+├── requirements.txt                  
+└── YourGreensAreSick_v2.ipynb       
 ```
 
 ---
