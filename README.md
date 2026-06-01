@@ -162,7 +162,8 @@ model_path = hf_hub_download(
     filename="final_progression_model.h5"
 )
 ```
-
+## Web App
+[![Streamlit App](https://img.shields.io/badge/Streamlit-Plant%20Leaf%20Disease%20Detector-2E7D32?style=flat-square&logo=streamlit&logoColor=white)](https://your-greensaresick.streamlit.app/)
 ---
 
 ## Project Report
