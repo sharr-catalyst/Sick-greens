@@ -140,7 +140,7 @@ left, right = st.columns([1, 1.2], gap="large")
 
 with left:
     # 🎨 Styled Scan Leaf Header with the dark green font color
-    st.markdown("<h3 style='color: #2E7D32; margin-top: 0;'>📸 Scan Leaf</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color: #2E7D32; margin-top: 0;'>Scan Leaf</h3>", unsafe_allow_html=True)
     
     # 📦 This line is now perfectly aligned with exactly 4 spaces of indentation
     uploaded = st.file_uploader("Upload leaf sample", type=["jpg", "png", "jpeg"], label_visibility="collapsed")
