@@ -1,6 +1,7 @@
 import streamlit as st
 import numpy as np
 from PIL import Image
+import time
 import os
 import urllib.request
 import json
@@ -227,7 +228,9 @@ def load_assets():
         import tensorflow as tf
         if os.path.exists(MODEL_PATH):
             return tf.keras.models.load_model(MODEL_PATH), "tensorflow"
-    except Exception:
+    except Exception as e:
+        # CORRECTION #2: Surfaces the structural block error instead of failing silently
+        st.sidebar.error(f"⚠️ TensorFlow Bypass Active: {e}")
         pass
     return None, "demo"
 
@@ -251,7 +254,7 @@ def predict(model, framework, image: Image.Image):
     if framework == "tensorflow":
         probs = model.predict(arr, verbose=0)[0]
     else:
-        np.random.seed(42)
+        # CORRECTION #1: Hardcoded random seed removed from inside this engine block!
         probs = np.random.dirichlet(np.ones(len(CLASS_LABELS)) * 0.1)
         
     top5_idx = np.argsort(probs)[::-1][:5]
@@ -311,7 +314,7 @@ with right:
         st.info("Awaiting input sample. Drop a leaf crop profile into the scanner area to run live neural inference.")
     
     elif st.session_state.analysis_done:
-        # ── Refactored Features Scope Card (Replaces the broken Yellow Warning block) ──
+        # Refactored Features Matrix Scope Card
         st.markdown("""
         <div class="card card-feature">
             <p style="font-size:1.1rem; margin:0 0 10px 0; font-weight:700; color:#1E40AF;">🛡️ Core Analytical Pipeline Scope</p>
