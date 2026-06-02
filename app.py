@@ -5,6 +5,7 @@ import os
 import urllib.request
 import json
 import pandas as pd
+import altair as alt  # ◄ Added for advanced graph theme styling
 
 # ── Page Config ──────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -205,7 +206,6 @@ def predict(model, framework, image: Image.Image):
     arr = np.array(img, dtype=np.float32) / 255.0
     arr = np.expand_dims(arr, axis=0)
     
-    # Initialize metric response objects
     outputs = {
         "disease_probs": None,
         "stage": 0,
@@ -216,8 +216,6 @@ def predict(model, framework, image: Image.Image):
     
     if framework == "tensorflow":
         raw_preds = model.predict(arr, verbose=0)
-        
-        # Check if model has multi-output architecture vs single output
         if isinstance(raw_preds, list):
             outputs["disease_probs"] = raw_preds[0][0]
             if len(raw_preds) > 1: outputs["stage"] = int(np.argmax(raw_preds[1][0]))
@@ -228,21 +226,18 @@ def predict(model, framework, image: Image.Image):
     else:
         outputs["disease_probs"] = np.random.dirichlet(np.ones(len(CLASS_LABELS)) * 0.1)
 
-    # Resolve Classification
     top5_idx = np.argsort(outputs["disease_probs"])[::-1][:5]
     top_label = CLASS_LABELS[top5_idx[0]]
     is_healthy = any(k in top_label for k in HEALTHY_KEYWORDS)
 
-    # Rule-Engine Processing Fallback for Progression Metrics
     if is_healthy:
         outputs["stage"] = 0
         outputs["days"] = 0.0
         outputs["urgency"] = 0.0
         outputs["urgency_label"] = "Low"
     else:
-        # Generate stable metrics derived from the confidence and target label properties
         if outputs["stage"] == 0:
-            outputs["stage"] = int((top5_idx[0] % 3) + 1) # Maps cleanly into Stage 1, 2, or 3
+            outputs["stage"] = int((top5_idx[0] % 3) + 1)
             
         if outputs["days"] == 0.0:
             stage_day_ranges = {1: (2.0, 5.0), 2: (6.0, 12.0), 3: (13.0, 24.0)}
@@ -373,10 +368,9 @@ with right:
                 </div>
                 """, unsafe_allow_html=True)
 
-        # 4. Temporal Tracking Line Charts
+        # 4. Temporal Tracking Line Charts (FIXED: White background, Light Amber curves)
         st.markdown("<p style='font-weight:700; margin:1.5rem 0 0.5rem 0; color:#1E293B;'>📈 Temporal Disease Progression Tracking (Historical Curve)</p>", unsafe_allow_html=True)
         
-        # Construct progression data points over an estimated historical baseline timeline
         if is_healthy:
             history_df = pd.DataFrame({"Days Enroute": [-6, -4, -2, 0], "Infection Stage": [0, 0, 0, 0], "Urgency Index": [0.0, 0.0, 0.0, 0.0]})
         else:
@@ -387,9 +381,28 @@ with right:
                 "Urgency Index": sorted([round(metrics_out["urgency"] * 0.2, 1), round(metrics_out["urgency"] * 0.5, 1), round(metrics_out["urgency"] * 0.8, 1), metrics_out["urgency"]])
             })
             
-        st.line_chart(history_df.set_index("Days Enroute"))
+        history_melted = history_df.melt(id_vars=["Days Enroute"], value_vars=["Infection Stage", "Urgency Index"], var_name="Metric", value_name="Value")
+        
+        line_chart = alt.Chart(history_melted).mark_line(point=True, strokeWidth=3).encode(
+            x=alt.X('Days Enroute:Q', title="Days Relative to Today"),
+            y=alt.Y('Value:Q', title="Metric Magnitude Value"),
+            color=alt.Color('Metric:N', scale=alt.Scale(range=['#FBBF24', '#D97706']), title="Tracked Indices")
+        ).properties(
+            background='white',  # ◄ Forces graph background to pure white
+            height=260
+        )
+        st.altair_chart(line_chart, use_container_width=True)
 
-        # Bar Charts Breakdown
-        st.markdown("<p style='font-weight:700; margin-top:1rem; color:#1E293B;'>⚡ Class Confidence Distribution</p>", unsafe_allow_html=True)
+        # 5. Class Confidence Breakdown (FIXED: White background, Light Amber blocks)
+        st.markdown("<p style='font-weight:700; margin-top:1.5rem; color:#1E293B;'>⚡ Class Confidence Distribution</p>", unsafe_allow_html=True)
         df = pd.DataFrame({"Classification": [CLASS_LABELS[i] for i in top5_idx], "Confidence": top5_prob})
-        st.bar_chart(df.set_index("Classification"))
+        
+        bar_chart = alt.Chart(df).mark_bar(color='#FBBF24').encode(  # ◄ Light Amber bin blocks
+            x=alt.X('Classification:N', sort='-y', title="Detected Varietal State Classes", axis=alt.Axis(labelAngle=-15)),
+            y=alt.Y('Confidence:Q', title="Confidence Metric", axis=alt.Axis(format='%')),
+            tooltip=['Classification', alt.Tooltip('Confidence:Q', format='.1%')]
+        ).properties(
+            background='white',  # ◄ Forces graph background to pure white
+            height=280
+        )
+        st.altair_chart(bar_chart, use_container_width=True)
