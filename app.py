@@ -17,7 +17,7 @@ st.set_page_config(
 # ── Cohesive CSS Color Palette & UI Styling ──────────────────────────────────
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght=300;400;500;600;700;800&display=swap');
 
     /* Global Overrides */
     * {
@@ -67,11 +67,12 @@ st.markdown("""
         margin-bottom: 1.2rem;
         border-left: 6px solid #16A34A; /* Default: Healthy Green */
     }
-    .card p, .card span, .card strong {
+    .card p, .card span, .card strong, .card li {
         color: #0F172A !important; /* Deep contrast slate font */
     }
-    .card-red   { border-left-color: #DC2626 !important; } /* Disease Alert */
-    .card-amber { border-left-color: #D97706 !important; } /* Clinical Protocol Warning */
+    .card-red     { border-left-color: #DC2626 !important; } /* Disease Alert */
+    .card-amber   { border-left-color: #D97706 !important; } /* Clinical Protocol Warning */
+    .card-feature { border-left-color: #2563EB !important; background: #F8FAFC !important; } /* System Scope Feature Info */
 
     /* Result Badges */
     .badge-healthy { 
@@ -310,8 +311,26 @@ with right:
         st.info("Awaiting input sample. Drop a leaf crop profile into the scanner area to run live neural inference.")
     
     elif st.session_state.analysis_done:
-        if framework == "demo":
-            st.warning("Running in simulated mode. Verify that your model name matches your Hugging Face storage precisely.")
+        # ── Refactored Features Scope Card (Replaces the broken Yellow Warning block) ──
+        st.markdown("""
+        <div class="card card-feature">
+            <p style="font-size:1.1rem; margin:0 0 10px 0; font-weight:700; color:#1E40AF;">🛡️ Core Analytical Pipeline Scope</p>
+            <ul style="margin:0; padding-left:20px; font-size:0.92rem; line-height:1.5;">
+                <li style="margin-bottom: 6px;"><b>Disease Classification:</b> Identifies plant disease across 38 classes (e.g., Apple Scab, Tomato Late Blight, Potato Early Blight).</li>
+                <li style="margin-bottom: 6px;"><b>Stage Classification:</b> Maps each disease to one of 4 progression stages:
+                    <ul style="margin:4px 0 0 0; padding-left:20px; list-style-type: circle;">
+                        <li><i>Stage 0</i> — Healthy</li>
+                        <li><i>Stage 1</i> — Early</li>
+                        <li><i>Stage 2</i> — Mid-stage</li>
+                        <li><i>Stage 3</i> — Late-stage</li>
+                    </ul>
+                </li>
+                <li style="margin-bottom: 6px;"><b>Days Estimation:</b> Regression head estimates days since infection onset.</li>
+                <li style="margin-bottom: 6px;"><b>Urgency Scoring:</b> Outputs a 0–10 urgency score with action recommendations (Low / Moderate / High / Critical).</li>
+                <li style="margin-bottom: 0;"><b>Temporal Tracking:</b> Tracks disease progression across multiple images over time and plots stage & urgency curves.</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
             
         top5_idx, top5_prob, all_probs = predict(model, framework, img)
         top_label = CLASS_LABELS[top5_idx[0]]
