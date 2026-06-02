@@ -1,10 +1,10 @@
 import streamlit as st
 import numpy as np
 from PIL import Image
-import time
 import os
 import urllib.request
 import json
+import pandas as pd
 
 # ── Page Config ──────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -14,114 +14,155 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ── CSS Styling ───────────────────────────────────────────────────────────────
+# ── Cohesive CSS Color Palette & UI Styling ──────────────────────────────────
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
+    /* Global Overrides */
     * {
         font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif !important;
     }
 
-    html, body, [data-testid="stAppViewContainer"], [data-testid="stSidebar"], .stApp, p, span, div, td, th, button, input {
-        font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    html, body, [data-testid="stAppViewContainer"], [data-testid="stSidebar"], .stApp {
+        background-color: #F7F9F6 !important;
+        color: #1E293B !important; /* Dark Slate for superior text contrast */
     }
 
+    /* Headings */
     h1, h2, h3 {
         font-weight: 700 !important;
         letter-spacing: -0.3px !important;
-        color: #1B5E20;
+        color: #0F2916 !important; /* Extremely dark forest green for visibility */
+        margin-top: 5px !important;
     }
 
-    /* Main background */
-    .stApp { background-color: #f0f7f0; }
-
-    /* Sidebar background mapping */
+    /* Sidebar Customization */
     [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #1B5E20 0%, #2E7D32 60%, #388E3C 100%);
+        background: linear-gradient(180deg, #163E1F 0%, #1F5C2E 60%, #2A7A3E 100%) !important;
     }
-    [data-testid="stSidebar"] * { color: #fff !important; }
-    [data-testid="stSidebar"] .stSelectbox label { color: #C8E6C9 !important; }
+    [data-testid="stSidebar"] * { 
+        color: #FFFFFF !important; 
+    }
+    [data-testid="stSidebar"] .stSelectbox label { 
+        color: #E2E8F0 !important; 
+    }
 
-    /* Dashboard Cards */
+    /* Top Dashboard Bar */
+    .top-bar {
+        background: linear-gradient(135deg, #113319, #1F5C2E);
+        color: #FFFFFF !important;
+        padding: 1.5rem 2rem;
+        border-radius: 14px;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+    
+    /* Dashboard UI Cards */
     .card {
-        background: white;
+        background: #FFFFFF !important;
         border-radius: 12px;
         padding: 1.4rem 1.6rem;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-        margin-bottom: 1rem;
-        border-left: 5px solid #2E7D32;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+        margin-bottom: 1.2rem;
+        border-left: 6px solid #16A34A; /* Default: Healthy Green */
     }
-    .card-red   { border-left-color: #c62828; }
-    .card-blue  { border-left-color: #1565C0; }
-    .card-amber { border-left-color: #E65100; }
+    .card p, .card span, .card strong {
+        color: #0F172A !important; /* Deep contrast slate font */
+    }
+    .card-red   { border-left-color: #DC2626 !important; } /* Disease Alert */
+    .card-amber { border-left-color: #D97706 !important; } /* Clinical Protocol Warning */
 
     /* Result Badges */
-    .badge-healthy  { background:#E8F5E9; color:#1B5E20; border:1.5px solid #2E7D32; border-radius:8px; padding:6px 18px; font-weight:700; font-size:1.1rem; }
-    .badge-disease  { background:#FFEBEE; color:#B71C1C; border:1.5px solid #c62828; border-radius:8px; padding:6px 18px; font-weight:700; font-size:1.1rem; }
+    .badge-healthy { 
+        background: #DCFCE7; 
+        color: #15803D !important; 
+        border: 1.5px solid #16A34A; 
+        border-radius: 8px; 
+        padding: 6px 18px; 
+        font-weight: 700; 
+        font-size: 1.05rem; 
+        display: inline-block;
+    }
+    .badge-disease { 
+        background: #FEE2E2; 
+        color: #B91C1C !important; 
+        border: 1.5px solid #DC2626; 
+        border-radius: 8px; 
+        padding: 6px 18px; 
+        font-weight: 700; 
+        font-size: 1.05rem; 
+        display: inline-block;
+    }
 
     /* Top Stats Counters */
     .stat-box {
-        background: white;
-        border-radius: 10px;
-        padding: 1rem;
+        background: #FFFFFF;
+        border-radius: 12px;
+        padding: 1.2rem 1rem;
         text-align: center;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        border: 1px solid #E2E8F0;
     }
     .stat-num { 
         font-size: 2.2rem; 
         font-weight: 800; 
-        color: #2E7D32; 
+        color: #165B29; 
         letter-spacing: -0.5px;
+        line-height: 1.1;
     }
-    .stat-lbl { font-size: 0.82rem; color: #666; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500; }
+    .stat-lbl { 
+        font-size: 0.85rem; 
+        color: #475569 !important; /* Dark grey for crisp readability */
+        margin-top: 6px; 
+        text-transform: uppercase; 
+        letter-spacing: 0.8px; 
+        font-weight: 600; 
+    }
 
-    /* ── COMPLETE FILE UPLOADER VISUAL REPAIRS ── */
+    /* File Uploader Customizations */
     [data-testid="stFileUploader"] {
-        border: 2px dashed #4CAF50 !important;
+        border: 2px dashed #16A34A !important;
         border-radius: 14px !important;
-        background-color: #F1F8E9 !important;
-        padding: 16px !important;
+        background-color: #F0FDF4 !important;
+        padding: 20px !important;
     }
     [data-testid="stFileUploader"] label, 
     [data-testid="stFileUploader"] p, 
     [data-testid="stFileUploader"] span, 
     [data-testid="stFileUploader"] small,
     [data-testid="stFileUploader"] div {
-        color: #1B5E20 !important;
+        color: #14532D !important;
+        font-weight: 500;
     }
     [data-testid="stFileUploader"] button {
-        background-color: #2E7D32 !important;
-        color: #ffffff !important;
+        background-color: #16A34A !important;
+        color: #FFFFFF !important;
         border: none !important;
         border-radius: 8px !important;
-        padding: 6px 16px !important;
+        padding: 8px 18px !important;
         font-weight: 600 !important;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1) !important;
     }
     [data-testid="stFileUploader"] button:hover {
-        background-color: #1B5E20 !important;
+        background-color: #15803D !important;
     }
 
     /* Core Action Buttons */
     .stButton>button {
-        background: linear-gradient(135deg, #2E7D32, #4CAF50);
-        color: white !important;
-        border: none;
-        border-radius: 8px;
-        padding: 0.5rem 2rem;
-        font-weight: 600;
-        font-size: 1rem;
-        transition: all 0.2s;
+        background: linear-gradient(135deg, #15803D, #16A34A) !important;
+        color: #FFFFFF !important;
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 0.6rem 2rem !important;
+        font-weight: 600 !important;
+        font-size: 1rem !important;
+        transition: all 0.2s ease-in-out;
+        width: 100%;
     }
-    .stButton>button:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(46,125,50,0.4); }
-
-    .top-bar {
-        background: linear-gradient(135deg, #1B5E20, #2E7D32);
-        color: white;
-        padding: 1.2rem 2rem;
-        border-radius: 12px;
-        margin-bottom: 1.5rem;
+    .stButton>button:hover { 
+        transform: translateY(-1px); 
+        box-shadow: 0 4px 14px rgba(22, 163, 74, 0.4) !important; 
     }
 </style>
 """, unsafe_allow_html=True)
@@ -224,8 +265,8 @@ if "current_file_name" not in st.session_state:
 # ── Interface Rendering ───────────────────────────────────────────────────────
 st.markdown("""
 <div class="top-bar">
-    <h1 style="color:white;margin:0;font-size:1.8rem;">🌿 Sick-greens Dashboard</h1>
-    <p style="color:#C8E6C9;margin:4px 0 0 0;font-size:0.95rem;">Plant Disease Diagnostics & Progression Tracker</p>
+    <h1 style="color:#FFFFFF; margin:0; font-size:1.9rem;">🌿 Sick-greens Dashboard</h1>
+    <p style="color:#DCFCE7; margin:5px 0 0 0; font-size:1rem; opacity: 0.95;">Plant Disease Diagnostics & Progression Tracker</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -245,8 +286,7 @@ st.markdown("<br>", unsafe_allow_html=True)
 left, right = st.columns([1, 1.2], gap="large")
 
 with left:
-    st.markdown("<h3 style='color: #2E7D32; margin-top: 0;'>📸 Scan Leaf</h3>", unsafe_allow_html=True)
-    
+    st.markdown("### 📸 Scan Leaf")
     uploaded = st.file_uploader("Upload leaf sample", type=["jpg", "png", "jpeg", "webp"], label_visibility="collapsed")
     
     if uploaded:
@@ -255,16 +295,16 @@ with left:
             st.session_state.analysis_done = False
             
         img = Image.open(uploaded)
-        st.image(img, width='stretch')
+        st.image(img, use_container_width=True)
         
-        if st.button("Analyze Diagnostics", width='stretch'):
+        if st.button("Analyze Diagnostics"):
             st.session_state.analysis_done = True
     else:
         st.session_state.current_file_name = None
         st.session_state.analysis_done = False
 
 with right:
-    st.markdown("<h3 style='color: #2E7D32; margin-top: 0;'>🔬 System Insights</h3>", unsafe_allow_html=True)
+    st.markdown("### 🔬 System Insights")
     
     if not uploaded:
         st.info("Awaiting input sample. Drop a leaf crop profile into the scanner area to run live neural inference.")
@@ -283,8 +323,8 @@ with right:
         
         st.markdown(f"""
         <div class="card {card_theme}">
-            <p style="font-size:0.85rem;color:#888;margin:0;">DIAGNOSIS MATRIX</p>
-            <p style="font-size:1.4rem;font-weight:800;margin:6px 0;">{top_label}</p>
+            <p style="font-size:0.85rem; color:#64748B; font-weight:600; margin:0; letter-spacing:0.5px;">DIAGNOSIS MATRIX</p>
+            <p style="font-size:1.4rem; font-weight:800; margin:6px 0; color:#0F172A;">{top_label}</p>
             <span class="{badge}">{top_conf:.1%} Match Confidence</span>
         </div>
         """, unsafe_allow_html=True)
@@ -295,15 +335,14 @@ with right:
                 info = DISEASE_INFO[matched]
                 st.markdown(f"""
                 <div class="card card-amber">
-                    <strong>📋 Clinical Protocol:</strong><br>
-                    • <b>Pathogen Class:</b> {info['cause']}<br>
-                    • <b>Threat Profile:</b> {info['severity']}<br>
-                    • <b>Remediation Strategy:</b> {info['treatment']}
+                    <p style="font-size:1.05rem; margin:0 0 8px 0; font-weight:700; color:#92400E;">📋 Clinical Protocol</p>
+                    <p style="margin:4px 0;"><b>Pathogen Class:</b> {info['cause']}</p>
+                    <p style="margin:4px 0;"><b>Threat Profile:</b> {info['severity']}</p>
+                    <p style="margin:4px 0;"><b>Remediation Strategy:</b> {info['treatment']}</p>
                 </div>
                 """, unsafe_allow_html=True)
 
         # Bar Charts Breakdown
-        st.markdown("**⚡ Class Confidence Distribution**")
-        import pandas as pd
+        st.markdown("<p style='font-weight:700; margin-top:1rem; color:#1E293B;'>⚡ Class Confidence Distribution</p>", unsafe_allow_html=True)
         df = pd.DataFrame({"Classification": [CLASS_LABELS[i] for i in top5_idx], "Confidence": top5_prob})
         st.bar_chart(df.set_index("Classification"))
